@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baseline Toolbar Click Dummy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background-color: #e8e8e8;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            background-color: #f5f5f5;
+            padding: 20px 24px;
+            border-bottom: 1px solid #d0d0d0;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 20px;
+            font-weight: 400;
+        }
+
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #fafafa;
+            border-bottom: 1px solid #e0e0e0;
+            min-height: 48px;
+        }
+
+
+        .dropdown-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 100px;
+            padding: 6px 12px;
+            height: 32px;
+            background: white;
+            border: 1px solid #d0d0d0;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .dropdown-button:hover {
+            background: #f5f5f5;
+            border-color: #bbb;
+        }
+
+        .dropdown-button.active {
+            background: #e8e8e8;
+            border-color: #999;
+        }
+
+        .dropdown-arrow {
+            margin-left: auto;
+            font-size: 12px;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            min-width: 450px;
+            background: white;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none;
+            z-index: 1000;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 15px;
+            font-weight: 600;
+            color: #666;
+            background: #f8f8f8;
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+        }
+
+        .toolbar-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-bottom: 1px solid #e0e0e0;
+            background: white;
+        }
+
+        /* Hide select-all checkbox */
+        .select-all-checkbox {
+            display: none;
+        }
+
+        /* Toggle switch for select all and baselines - unified styling */
+        .toggle-switch-select-all,
+        .toggle-switch {
+            position: relative;
+            width: 40px;
+            height: 20px;
+            background: #ccc;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+            flex-shrink: 0;
+        }
+
+        .toggle-switch-select-all::after,
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: white;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+        }
+
+        /* Checked state for select all */
+        .select-all-checkbox:checked + .toggle-switch-select-all {
+            background: #1976d2;
+        }
+
+        .select-all-checkbox:checked + .toggle-switch-select-all::after {
+            transform: translateX(20px);
+        }
+
+        /* Indeterminate state for select all */
+        .select-all-checkbox:indeterminate + .toggle-switch-select-all {
+            background: #1976d2;
+            opacity: 0.6;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            background: white;
+        }
+
+        .search-box:focus-within {
+            border-color: #1976d2;
+            outline: 2px solid rgba(25, 118, 210, 0.1);
+        }
+
+        .search-icon {
+            color: #999;
+            font-size: 16px;
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .search-input::placeholder {
+            color: #999;
+        }
+
+        .dropdown-content {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .dropdown-item {
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .dropdown-item:hover {
+            background: #f5f5f5;
+        }
+
+        .baseline-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            position: relative;
+        }
+
+        .baseline-item:hover {
+            background: #f5f5f5;
+        }
+
+        /* Hide default checkbox */
+        .baseline-item input[type="checkbox"] {
+            display: none;
+        }
+
+        /* Checked state for baseline toggles */
+        input[type="checkbox"]:checked + .toggle-switch {
+            background: #1976d2;
+        }
+
+        input[type="checkbox"]:checked + .toggle-switch::after {
+            transform: translateX(20px);
+        }
+
+        .baseline-item label[contenteditable="true"] {
+            flex: 1;
+            cursor: text;
+            user-select: none;
+            font-size: 14px;
+            color: #333;
+            padding: 4px 8px;
+            border-radius: 3px;
+            transition: background 0.2s;
+            min-width: 0;
+            max-width: 200px;
+        }
+
+        .baseline-item label[contenteditable="true"]:hover {
+            background: #f0f0f0;
+        }
+
+        .baseline-item label[contenteditable="true"]:focus {
+            outline: 2px solid #1976d2;
+            background: white;
+        }
+
+        .baseline-date-container {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            min-width: 120px;
+        }
+
+        .baseline-date-icon {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .baseline-date {
+            font-size: 12px;
+            color: #999;
+            white-space: nowrap;
+        }
+
+        .baseline-date-container.hidden {
+            visibility: hidden;
+        }
+
+        .speed-dial-container {
+            position: relative;
+            margin-left: auto;
+        }
+
+        .speed-dial-trigger {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #1976d2;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            transition: all 0.2s;
+            opacity: 0;
+        }
+
+        .baseline-item:hover .speed-dial-trigger {
+            opacity: 1;
+        }
+
+        .speed-dial-trigger:hover {
+            background: #1565c0;
+            transform: scale(1.05);
+        }
+
+        .speed-dial-trigger.active {
+            background: #1565c0;
+        }
+
+        .speed-dial-menu {
+            position: absolute;
+            right: calc(100% + 8px);
+            top: 50%;
+            transform: translateY(-50%);
+            display: none;
+            flex-direction: row;
+            gap: 8px;
+            padding: 4px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+
+        .speed-dial-menu.show {
+            display: flex;
+        }
+
+        .speed-dial-action {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: white;
+            border: 1px solid #d0d0d0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all 0.2s;
+            color: #666;
+        }
+
+        .speed-dial-action:hover {
+            background: #f0f0f0;
+            border-color: #999;
+            transform: scale(1.1);
+        }
+
+        .speed-dial-action.save {
+            background: #1976d2;
+            border-color: #1976d2;
+            color: white;
+        }
+
+        .speed-dial-action.save:hover {
+            background: #1565c0;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #e0e0e0;
+            margin: 4px 0;
+        }
+
+        .dropdown-footer {
+            padding: 8px 16px;
+            border-top: 1px solid #e0e0e0;
+            background: #fafafa;
+            border-bottom-left-radius: 4px;
+            border-bottom-right-radius: 4px;
+        }
+
+        .add-baseline {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            color: #1976d2;
+            padding: 8px 0;
+            cursor: pointer;
+        }
+
+        .add-baseline:hover {
+            color: #1565c0;
+        }
+
+        .add-icon {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .toolbar-label {
+            margin-left: auto;
+            color: #999;
+            font-size: 13px;
+            font-style: italic;
+            padding: 0 16px;
+        }
+
+        .toolbar-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .schedules-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .info-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            background: #0066cc;
+            color: white;
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            background: #333;
+            color: white;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            display: none;
+            z-index: 2000;
+            font-size: 14px;
+        }
+
+        .notification.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .button-group {
+            display: flex;
+            align-items: center;
+        }
+
+        .button-group .toolbar-button:last-child {
+            border-right: 1px solid #d0d0d0;
+            border-top-right-radius: 4px;
+            border-bottom-right-radius: 4px;
+        }
+
+        /* Icon styles */
+        .icon {
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Click Dummy for Baseline Management in New Gantt Toolbar</h1>
+        </div>
+
+        <div class="toolbar">
+            <!-- Baseline Dropdown -->
+            <div class="dropdown-container">
+                <button class="dropdown-button" id="baselineDropdownBtn" onclick="toggleBaselineDropdown()">
+                    <span>Baselines</span>
+                    <span class="dropdown-arrow">▼</span>
+                </button>
+                <div class="dropdown-menu" id="baselineDropdown">
+                    <div class="dropdown-header">Baselines of Schedule XX</div>
+
+                    <div class="toolbar-row">
+                        <input type="checkbox" class="select-all-checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()">
+                        <label for="selectAllCheckbox" class="toggle-switch-select-all" title="Show/hide all baselines in New Gantt"></label>
+                        <div class="search-box">
+                            <span class="search-icon">🔍</span>
+                            <input type="text" class="search-input" id="baselineSearch" placeholder="Search" oninput="filterBaselines()">
+                        </div>
+                    </div>
+
+                    <div class="dropdown-content" id="baselineList">
+                        <div class="baseline-item" onclick="toggleBaseline(event, 1)">
+                            <input type="checkbox" id="baseline1" checked onclick="event.stopPropagation(); updateSelectAllCheckbox();">
+                            <label for="baseline1" class="toggle-switch" title="Show/hide this baseline in New Gantt" onclick="event.stopPropagation();"></label>
+                            <label contenteditable="true" data-id="1" onclick="event.stopPropagation();" onfocus="startEditing(1)" onblur="saveBaselineName(1)" onkeydown="handleLabelKeydown(event, 1)">Baseline 1</label>
+                            <div class="baseline-date-container" data-date-container-id="1" onclick="event.stopPropagation();">
+                                <span class="baseline-date-icon">💾</span>
+                                <span class="baseline-date" data-date-id="1" data-timestamp="1733875200000">Dec 10, 2025</span>
+                            </div>
+                            <div class="speed-dial-container">
+                                <button class="speed-dial-trigger" onclick="toggleSpeedDial(event, 1)">⋯</button>
+                                <div class="speed-dial-menu" id="speedDial1">
+                                    <button class="speed-dial-action save" onclick="saveBaseline(event, 1)" title="Save">💾</button>
+                                    <button class="speed-dial-action" onclick="deleteBaseline(event, 1)" title="Delete">🗑️</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="baseline-item" onclick="toggleBaseline(event, 2)">
+                            <input type="checkbox" id="baseline2" onclick="event.stopPropagation(); updateSelectAllCheckbox();">
+                            <label for="baseline2" class="toggle-switch" title="Show/hide this baseline in New Gantt" onclick="event.stopPropagation();"></label>
+                            <label contenteditable="true" data-id="2" onclick="event.stopPropagation();" onfocus="startEditing(2)" onblur="saveBaselineName(2)" onkeydown="handleLabelKeydown(event, 2)">Baseline 2</label>
+                            <div class="baseline-date-container" data-date-container-id="2" onclick="event.stopPropagation();">
+                                <span class="baseline-date-icon">💾</span>
+                                <span class="baseline-date" data-date-id="2" data-timestamp="1733788800000">Dec 9, 2025</span>
+                            </div>
+                            <div class="speed-dial-container">
+                                <button class="speed-dial-trigger" onclick="toggleSpeedDial(event, 2)">⋯</button>
+                                <div class="speed-dial-menu" id="speedDial2">
+                                    <button class="speed-dial-action save" onclick="saveBaseline(event, 2)" title="Save">💾</button>
+                                    <button class="speed-dial-action" onclick="deleteBaseline(event, 2)" title="Delete">🗑️</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="baseline-item" onclick="toggleBaseline(event, 3)">
+                            <input type="checkbox" id="baseline3" onclick="event.stopPropagation(); updateSelectAllCheckbox();">
+                            <label for="baseline3" class="toggle-switch" title="Show/hide this baseline in New Gantt" onclick="event.stopPropagation();"></label>
+                            <label contenteditable="true" data-id="3" onclick="event.stopPropagation();" onfocus="startEditing(3)" onblur="saveBaselineName(3)" onkeydown="handleLabelKeydown(event, 3)">Baseline 3</label>
+                            <div class="baseline-date-container" data-date-container-id="3" onclick="event.stopPropagation();">
+                                <span class="baseline-date-icon">💾</span>
+                                <span class="baseline-date" data-date-id="3" data-timestamp="1733702400000">Dec 8, 2025</span>
+                            </div>
+                            <div class="speed-dial-container">
+                                <button class="speed-dial-trigger" onclick="toggleSpeedDial(event, 3)">⋯</button>
+                                <div class="speed-dial-menu" id="speedDial3">
+                                    <button class="speed-dial-action save" onclick="saveBaseline(event, 3)" title="Save">💾</button>
+                                    <button class="speed-dial-action" onclick="deleteBaseline(event, 3)" title="Delete">🗑️</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dropdown-footer">
+                        <div class="add-baseline" onclick="addBaseline(event)">
+                            <span class="add-icon">+</span>
+                            <span>Add Baseline</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <span class="toolbar-label">New Gantt Toolbar</span>
+        </div>
+
+        <!-- Content area placeholder -->
+        <div style="padding: 24px; min-height: 400px; background: #fafafa;">
+            <p style="color: #666; text-align: center; padding: 40px;">Gantt chart content area</p>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="notification" id="notification"></div>
+
+    <script>
+        let currentBaselineDropdownState = false;
+        let baselineCount = 3;
+        let activeSpeedDial = null;
+
+        function toggleBaselineDropdown() {
+            const dropdown = document.getElementById('baselineDropdown');
+            const btn = document.getElementById('baselineDropdownBtn');
+            currentBaselineDropdownState = !currentBaselineDropdownState;
+
+            if (currentBaselineDropdownState) {
+                dropdown.classList.add('show');
+                btn.classList.add('active');
+                updateSelectAllCheckbox();
+            } else {
+                dropdown.classList.remove('show');
+                btn.classList.remove('active');
+                closeAllSpeedDials();
+            }
+        }
+
+        function filterBaselines() {
+            const searchTerm = document.getElementById('baselineSearch').value.toLowerCase();
+            const items = document.querySelectorAll('.baseline-item');
+
+            items.forEach(item => {
+                const label = item.querySelector('label').textContent.toLowerCase();
+                if (label.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function toggleSelectAll() {
+            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+            const checkboxes = document.querySelectorAll('.baseline-item input[type="checkbox"]');
+            const isChecked = selectAllCheckbox.checked;
+
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = isChecked;
+            });
+
+            showNotification(isChecked ? 'All baselines shown' : 'All baselines hidden');
+        }
+
+        function updateSelectAllCheckbox() {
+            const checkboxes = document.querySelectorAll('.baseline-item input[type="checkbox"]');
+            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+
+            if (checkboxes.length === 0) {
+                selectAllCheckbox.checked = false;
+                selectAllCheckbox.indeterminate = false;
+                return;
+            }
+
+            const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+
+            if (checkedCount === 0) {
+                selectAllCheckbox.checked = false;
+                selectAllCheckbox.indeterminate = false;
+            } else if (checkedCount === checkboxes.length) {
+                selectAllCheckbox.checked = true;
+                selectAllCheckbox.indeterminate = false;
+            } else {
+                selectAllCheckbox.checked = false;
+                selectAllCheckbox.indeterminate = true;
+            }
+        }
+
+        function toggleBaseline(event, id) {
+            // Don't toggle if clicking on speed dial, toggle switch, editable label, or date container
+            if (event.target.closest('.speed-dial-container') ||
+                event.target.closest('.baseline-date-container') ||
+                event.target.classList.contains('toggle-switch') ||
+                (event.target.tagName === 'LABEL' && event.target.hasAttribute('contenteditable'))) {
+                return;
+            }
+
+            const checkbox = document.getElementById(`baseline${id}`);
+            if (event.target.tagName !== 'INPUT') {
+                checkbox.checked = !checkbox.checked;
+            }
+
+            const label = document.querySelector(`label[data-id="${id}"]`).textContent;
+            showNotification(`${label} ${checkbox.checked ? 'shown' : 'hidden'}`);
+
+            updateSelectAllCheckbox();
+        }
+
+        let originalLabelValue = '';
+
+        function startEditing(id) {
+            const label = document.querySelector(`label[data-id="${id}"]`);
+            originalLabelValue = label.textContent.trim();
+        }
+
+        function saveBaselineName(id) {
+            const label = document.querySelector(`label[data-id="${id}"]`);
+            const newName = label.textContent.trim();
+
+            if (newName === '') {
+                label.textContent = originalLabelValue || `Baseline ${id}`;
+                showNotification('Baseline name cannot be empty');
+                originalLabelValue = '';
+                return;
+            }
+
+            if (newName !== originalLabelValue && originalLabelValue !== '') {
+                showNotification(`Baseline renamed to "${newName}"`);
+            }
+
+            originalLabelValue = '';
+        }
+
+        function handleLabelKeydown(event, id) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                const label = document.querySelector(`label[data-id="${id}"]`);
+                label.blur();
+            } else if (event.key === 'Escape') {
+                event.preventDefault();
+                const label = document.querySelector(`label[data-id="${id}"]`);
+                label.textContent = originalLabelValue;
+                label.blur();
+                originalLabelValue = '';
+            }
+        }
+
+        function toggleSpeedDial(event, id) {
+            event.stopPropagation();
+            const speedDial = document.getElementById(`speedDial${id}`);
+            const trigger = event.target;
+
+            // Close other speed dials
+            if (activeSpeedDial && activeSpeedDial !== id) {
+                closeAllSpeedDials();
+            }
+
+            if (speedDial.classList.contains('show')) {
+                speedDial.classList.remove('show');
+                trigger.classList.remove('active');
+                activeSpeedDial = null;
+            } else {
+                speedDial.classList.add('show');
+                trigger.classList.add('active');
+                activeSpeedDial = id;
+            }
+        }
+
+        function closeAllSpeedDials() {
+            document.querySelectorAll('.speed-dial-menu').forEach(menu => {
+                menu.classList.remove('show');
+            });
+            document.querySelectorAll('.speed-dial-trigger').forEach(trigger => {
+                trigger.classList.remove('active');
+            });
+            activeSpeedDial = null;
+        }
+
+        function saveBaseline(event, id) {
+            event.stopPropagation();
+            closeAllSpeedDials();
+            const label = document.querySelector(`label[data-id="${id}"]`).textContent;
+
+            // Update the date to current date and make date container visible
+            const dateContainer = document.querySelector(`div[data-date-container-id="${id}"]`);
+            const dateSpan = document.querySelector(`span[data-date-id="${id}"]`);
+            if (dateSpan && dateContainer) {
+                const now = new Date();
+                const options = { month: 'short', day: 'numeric', year: 'numeric' };
+                dateSpan.textContent = now.toLocaleDateString('en-US', options);
+                dateContainer.classList.remove('hidden');
+
+                // Store the timestamp for sorting
+                dateSpan.setAttribute('data-timestamp', now.getTime());
+            }
+
+            // Reorder baselines by date (newest first)
+            reorderBaselinesByDate();
+
+            showNotification(`${label} saved with current schedule state`);
+        }
+
+        function reorderBaselinesByDate() {
+            const dropdownContent = document.getElementById('baselineList');
+            const items = Array.from(dropdownContent.querySelectorAll('.baseline-item'));
+
+            // Sort items by timestamp (newest first)
+            items.sort((a, b) => {
+                const dateA = a.querySelector('[data-timestamp]');
+                const dateB = b.querySelector('[data-timestamp]');
+
+                // If both have timestamps, sort by timestamp
+                if (dateA && dateB) {
+                    const timestampA = parseInt(dateA.getAttribute('data-timestamp'));
+                    const timestampB = parseInt(dateB.getAttribute('data-timestamp'));
+                    return timestampB - timestampA; // Descending order (newest first)
+                }
+
+                // Items without timestamp go to the end
+                if (!dateA && dateB) return 1;
+                if (dateA && !dateB) return -1;
+
+                return 0; // Keep original order if neither has timestamp
+            });
+
+            // Re-append items in sorted order
+            items.forEach(item => {
+                dropdownContent.appendChild(item);
+            });
+        }
+
+        function deleteBaseline(event, id) {
+            event.stopPropagation();
+            closeAllSpeedDials();
+            const label = document.querySelector(`label[data-id="${id}"]`).textContent;
+            if (confirm(`Are you sure you want to delete "${label}"?`)) {
+                const item = event.target.closest('.baseline-item');
+                item.remove();
+                showNotification(`${label} deleted`);
+                updateSelectAllCheckbox();
+            }
+        }
+
+        function addBaseline(event) {
+            event.stopPropagation();
+            baselineCount++;
+
+            const dropdownContent = document.getElementById('baselineList');
+
+            // Get current date - automatically saved
+            const now = new Date();
+            const options = { month: 'short', day: 'numeric', year: 'numeric' };
+            const dateStr = now.toLocaleDateString('en-US', options);
+            const timestamp = now.getTime();
+
+            const newItem = document.createElement('div');
+            newItem.className = 'baseline-item';
+            newItem.onclick = function(e) { toggleBaseline(e, baselineCount); };
+            newItem.innerHTML = `
+                <input type="checkbox" id="baseline${baselineCount}" onclick="event.stopPropagation(); updateSelectAllCheckbox();">
+                <label for="baseline${baselineCount}" class="toggle-switch" title="Show/hide this baseline in New Gantt" onclick="event.stopPropagation();"></label>
+                <label contenteditable="true" data-id="${baselineCount}" data-new="true" onclick="event.stopPropagation();" onfocus="startEditing(${baselineCount})" onblur="saveBaselineName(${baselineCount})" onkeydown="handleLabelKeydown(event, ${baselineCount})">New Baseline</label>
+                <div class="baseline-date-container" data-date-container-id="${baselineCount}" onclick="event.stopPropagation();">
+                    <span class="baseline-date-icon">💾</span>
+                    <span class="baseline-date" data-date-id="${baselineCount}" data-timestamp="${timestamp}">${dateStr}</span>
+                </div>
+                <div class="speed-dial-container">
+                    <button class="speed-dial-trigger" onclick="toggleSpeedDial(event, ${baselineCount})">⋯</button>
+                    <div class="speed-dial-menu" id="speedDial${baselineCount}">
+                        <button class="speed-dial-action save" onclick="saveBaseline(event, ${baselineCount})" title="Save">💾</button>
+                        <button class="speed-dial-action" onclick="deleteBaseline(event, ${baselineCount})" title="Delete">🗑️</button>
+                    </div>
+                </div>
+            `;
+
+            // Insert at the top (prepend) instead of bottom (append)
+            dropdownContent.insertBefore(newItem, dropdownContent.firstChild);
+            updateSelectAllCheckbox();
+
+            // Focus the label for immediate editing
+            setTimeout(() => {
+                const label = newItem.querySelector('label');
+                label.focus();
+                // Select all text
+                const range = document.createRange();
+                range.selectNodeContents(label);
+                const selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }, 50);
+
+            showNotification('New baseline automatically saved - enter name');
+        }
+
+        function handleAction(action) {
+            showNotification(`Action clicked: ${action}`);
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2500);
+        }
+
+        // Close dropdown and speed dials when clicking outside
+        document.addEventListener('click', function(event) {
+            const baselineDropdown = document.getElementById('baselineDropdown');
+            const baselineBtn = document.getElementById('baselineDropdownBtn');
+
+            // Close speed dials if clicking outside them
+            if (!event.target.closest('.speed-dial-container')) {
+                closeAllSpeedDials();
+            }
+
+            // Close dropdown if clicking outside
+            if (!baselineBtn.contains(event.target) &&
+                !baselineDropdown.contains(event.target) &&
+                currentBaselineDropdownState) {
+                toggleBaselineDropdown();
+            }
+        });
+    </script>
+</body>
+</html>
