@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Baseline Toolbar Click Dummy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -56,17 +57,22 @@
         .dropdown-button {
             display: flex;
             align-items: center;
-            gap: 8px;
-            min-width: 100px;
-            padding: 6px 12px;
+            justify-content: center;
+            gap: 6px;
+            min-width: auto;
+            padding: 6px 10px;
             height: 32px;
             background: white;
             border: 1px solid #d0d0d0;
             border-radius: 3px;
             cursor: pointer;
             transition: all 0.2s;
-            font-size: 13px;
-            color: #333;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .dropdown-button i {
+            font-size: 16px;
         }
 
         .dropdown-button:hover {
@@ -80,8 +86,7 @@
         }
 
         .dropdown-arrow {
-            margin-left: auto;
-            font-size: 12px;
+            font-size: 10px;
         }
 
         .dropdown-menu {
@@ -185,7 +190,7 @@
 
         .search-icon {
             color: #999;
-            font-size: 16px;
+            font-size: 14px;
         }
 
         .search-input {
@@ -496,9 +501,9 @@
         <div class="toolbar">
             <!-- Baseline Dropdown -->
             <div class="dropdown-container">
-                <button class="dropdown-button" id="baselineDropdownBtn" onclick="toggleBaselineDropdown()">
-                    <span>Baselines</span>
-                    <span class="dropdown-arrow">▼</span>
+                <button class="dropdown-button" id="baselineDropdownBtn" onclick="toggleBaselineDropdown()" title="Baselines">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <span class="dropdown-arrow"><i class="fa-solid fa-caret-down"></i></span>
                 </button>
                 <div class="dropdown-menu" id="baselineDropdown">
                     <div class="dropdown-header">Baselines of Schedule XX</div>
@@ -507,7 +512,7 @@
                         <input type="checkbox" class="select-all-checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()">
                         <label for="selectAllCheckbox" class="toggle-switch-select-all" title="Show/hide all baselines in New Gantt"></label>
                         <div class="search-box">
-                            <span class="search-icon">🔍</span>
+                            <i class="fa-solid fa-magnifying-glass search-icon"></i>
                             <input type="text" class="search-input" id="baselineSearch" placeholder="Search" oninput="filterBaselines()">
                         </div>
                     </div>
@@ -518,14 +523,14 @@
                             <label for="baseline1" class="toggle-switch" title="Show/hide this baseline in New Gantt" onclick="event.stopPropagation();"></label>
                             <label contenteditable="true" data-id="1" onclick="event.stopPropagation();" onfocus="startEditing(1)" onblur="saveBaselineName(1)" onkeydown="handleLabelKeydown(event, 1)">Baseline 1</label>
                             <div class="baseline-date-container" data-date-container-id="1" onclick="event.stopPropagation();">
-                                <span class="baseline-date-icon">💾</span>
+                                <i class="fa-solid fa-floppy-disk baseline-date-icon"></i>
                                 <span class="baseline-date" data-date-id="1" data-timestamp="1733875200000">Dec 10, 2025</span>
                             </div>
                             <div class="speed-dial-container">
                                 <button class="speed-dial-trigger" onclick="toggleSpeedDial(event, 1)">⋯</button>
                                 <div class="speed-dial-menu" id="speedDial1">
-                                    <button class="speed-dial-action save" onclick="saveBaseline(event, 1)" title="Save">💾</button>
-                                    <button class="speed-dial-action" onclick="deleteBaseline(event, 1)" title="Delete">🗑️</button>
+                                    <button class="speed-dial-action save" onclick="saveBaseline(event, 1)" title="Save"><i class="fa-solid fa-floppy-disk"></i></button>
+                                    <button class="speed-dial-action" onclick="deleteBaseline(event, 1)" title="Delete"><i class="fa-solid fa-trash"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -534,14 +539,14 @@
                             <label for="baseline2" class="toggle-switch" title="Show/hide this baseline in New Gantt" onclick="event.stopPropagation();"></label>
                             <label contenteditable="true" data-id="2" onclick="event.stopPropagation();" onfocus="startEditing(2)" onblur="saveBaselineName(2)" onkeydown="handleLabelKeydown(event, 2)">Baseline 2</label>
                             <div class="baseline-date-container" data-date-container-id="2" onclick="event.stopPropagation();">
-                                <span class="baseline-date-icon">💾</span>
+                                <i class="fa-solid fa-floppy-disk baseline-date-icon"></i>
                                 <span class="baseline-date" data-date-id="2" data-timestamp="1733788800000">Dec 9, 2025</span>
                             </div>
                             <div class="speed-dial-container">
                                 <button class="speed-dial-trigger" onclick="toggleSpeedDial(event, 2)">⋯</button>
                                 <div class="speed-dial-menu" id="speedDial2">
-                                    <button class="speed-dial-action save" onclick="saveBaseline(event, 2)" title="Save">💾</button>
-                                    <button class="speed-dial-action" onclick="deleteBaseline(event, 2)" title="Delete">🗑️</button>
+                                    <button class="speed-dial-action save" onclick="saveBaseline(event, 2)" title="Save"><i class="fa-solid fa-floppy-disk"></i></button>
+                                    <button class="speed-dial-action" onclick="deleteBaseline(event, 2)" title="Delete"><i class="fa-solid fa-trash"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -550,14 +555,14 @@
                             <label for="baseline3" class="toggle-switch" title="Show/hide this baseline in New Gantt" onclick="event.stopPropagation();"></label>
                             <label contenteditable="true" data-id="3" onclick="event.stopPropagation();" onfocus="startEditing(3)" onblur="saveBaselineName(3)" onkeydown="handleLabelKeydown(event, 3)">Baseline 3</label>
                             <div class="baseline-date-container" data-date-container-id="3" onclick="event.stopPropagation();">
-                                <span class="baseline-date-icon">💾</span>
+                                <i class="fa-solid fa-floppy-disk baseline-date-icon"></i>
                                 <span class="baseline-date" data-date-id="3" data-timestamp="1733702400000">Dec 8, 2025</span>
                             </div>
                             <div class="speed-dial-container">
                                 <button class="speed-dial-trigger" onclick="toggleSpeedDial(event, 3)">⋯</button>
                                 <div class="speed-dial-menu" id="speedDial3">
-                                    <button class="speed-dial-action save" onclick="saveBaseline(event, 3)" title="Save">💾</button>
-                                    <button class="speed-dial-action" onclick="deleteBaseline(event, 3)" title="Delete">🗑️</button>
+                                    <button class="speed-dial-action save" onclick="saveBaseline(event, 3)" title="Save"><i class="fa-solid fa-floppy-disk"></i></button>
+                                    <button class="speed-dial-action" onclick="deleteBaseline(event, 3)" title="Delete"><i class="fa-solid fa-trash"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -609,7 +614,7 @@
             const items = document.querySelectorAll('.baseline-item');
 
             items.forEach(item => {
-                const label = item.querySelector('label').textContent.toLowerCase();
+                const label = item.querySelector('label[contenteditable="true"]').textContent.toLowerCase();
                 if (label.includes(searchTerm)) {
                     item.style.display = 'flex';
                 } else {
@@ -829,14 +834,14 @@
                 <label for="baseline${baselineCount}" class="toggle-switch" title="Show/hide this baseline in New Gantt" onclick="event.stopPropagation();"></label>
                 <label contenteditable="true" data-id="${baselineCount}" data-new="true" onclick="event.stopPropagation();" onfocus="startEditing(${baselineCount})" onblur="saveBaselineName(${baselineCount})" onkeydown="handleLabelKeydown(event, ${baselineCount})">New Baseline</label>
                 <div class="baseline-date-container" data-date-container-id="${baselineCount}" onclick="event.stopPropagation();">
-                    <span class="baseline-date-icon">💾</span>
+                    <i class="fa-solid fa-floppy-disk baseline-date-icon"></i>
                     <span class="baseline-date" data-date-id="${baselineCount}" data-timestamp="${timestamp}">${dateStr}</span>
                 </div>
                 <div class="speed-dial-container">
                     <button class="speed-dial-trigger" onclick="toggleSpeedDial(event, ${baselineCount})">⋯</button>
                     <div class="speed-dial-menu" id="speedDial${baselineCount}">
-                        <button class="speed-dial-action save" onclick="saveBaseline(event, ${baselineCount})" title="Save">💾</button>
-                        <button class="speed-dial-action" onclick="deleteBaseline(event, ${baselineCount})" title="Delete">🗑️</button>
+                        <button class="speed-dial-action save" onclick="saveBaseline(event, ${baselineCount})" title="Save"><i class="fa-solid fa-floppy-disk"></i></button>
+                        <button class="speed-dial-action" onclick="deleteBaseline(event, ${baselineCount})" title="Delete"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
             `;
